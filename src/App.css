@@ -6,7 +6,6 @@
 
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   padding: 20px;
 }
@@ -17,7 +16,7 @@ body {
 }
 
 h1 {
-  color: white;
+  color: black;
   text-align: center;
   margin-bottom: 30px;
   font-size: 2.5rem;
@@ -28,24 +27,31 @@ h1 {
   gap: 10px;
   margin-bottom: 30px;
   justify-content: center;
+  align-items: center;
 }
 
-#noteInput {
+/** ----- noteinput ----- */
+.add_field {
+  margin-left: auto;
+}
+
+.note-input {
   padding: 12px 15px;
+  margin: 5px;
   font-size: 1rem;
   border: none;
   border-radius: 8px;
   width: 300px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   transition: box-shadow 0.3s ease;
 }
 
-#noteInput:focus {
+.note-input:focus {
   outline: none;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
 }
 
-#addBtn {
+.add-btn {
   padding: 12px 30px;
   font-size: 1rem;
   background-color: #4caf50;
@@ -59,12 +65,30 @@ h1 {
   font-weight: bold;
 }
 
-#addBtn:hover {
+.add-btn:hover {
   background-color: #45a049;
 }
 
-#addBtn:active {
+.add-btn:active {
   transform: scale(0.98);
+}
+
+.stateBtn {
+  padding: 12px 30px;
+  font-size: 1rem;
+  background-color: #9f9f9f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.1s ease;
+  font-weight: bold;
+}
+
+.stateBtn.active {
+  background-color: #283593;
 }
 
 .notes-board {
@@ -85,7 +109,8 @@ h1 {
   justify-content: space-between;
   transition:
     transform 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    border 0.2s ease;
   word-wrap: break-word;
   word-break: break-word;
 }
@@ -103,19 +128,36 @@ h1 {
   overflow-wrap: break-word;
 }
 
-.note-delete {
-  align-self: flex-end;
-  background-color: #ff6b6b;
-  color: white;
+.note-edit-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+.note-edit-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.note-save {
+  background-color: #4caf50;
+  color: black;
   border: none;
   padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: background-color 0.2s ease;
-  margin-top: 10px;
 }
 
-.note-delete:hover {
-  background-color: #ff5252;
+.note-cancel {
+  background-color: #9e9e9e;
+  color: black;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
 }

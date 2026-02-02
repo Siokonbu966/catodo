@@ -1,0 +1,25 @@
+.mode-select {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(244, 255, 255, 0.2);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  width: 20rem;
+  margin-left: auto;
+}
+
+.mode-desc {
+  color: black;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.mode-select button {
+  text-align: center;
+}
