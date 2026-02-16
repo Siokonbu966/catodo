@@ -5,6 +5,8 @@ interface Note {
   id: number;
   text: string;
   createdAt: string;
+  crackCount: number;
+  crackPhase: number;
 }
 
 interface Footprint {
@@ -46,6 +48,8 @@ function App() {
       id: Date.now(),
       text: text,
       createdAt: new Date().toLocaleString("ja-JP"),
+      crackCount: 0,
+      crackPhase: 0,
     };
 
     setNotes([...notes, newNote]);
@@ -92,9 +96,33 @@ function App() {
           counters.delete(id);
         }
       }, 500);
-    } else if (count === 3 && !editMode) {
-      counters.delete(id);
-      deleteNote(id);
+    } else if (!editMode) {
+      if (count <= 3) {
+        setNotes(notes.map((note) =>
+          note.id === id ? { ...note, crackCount: count, crackPhase: 0 } : note
+        ));
+
+        // アニメーション開始：3フェーズ表示
+        let phase = 0;
+        const animationInterval = setInterval(() => {
+          phase++;
+          if (phase <= 2) {
+            setNotes((prevNotes) =>
+              prevNotes.map((note) =>
+                note.id === id ? { ...note, crackPhase: phase } : note
+              )
+            );
+          } else {
+            clearInterval(animationInterval);
+          }
+        }, 150);
+      }
+      if (count === 3) {
+        counters.delete(id);
+        setTimeout(() => {
+          deleteNote(id);
+        }, 300);
+      }
     }
   };
 
@@ -244,12 +272,39 @@ function App() {
                 </div>
               </>
             ) : (
-              <div
-                className="note-content"
-                title="クリックして編集\n3回クリックで削除"
-                dangerouslySetInnerHTML={{ __html: escapeHtml(note.text) }}
-                style={{ cursor: "text" }}
-              />
+              <div style={{ position: "relative" }}>
+                <div
+                  className="note-content"
+                  title="クリックして編集\n3回クリックで削除"
+                  dangerouslySetInnerHTML={{ __html: escapeHtml(note.text) }}
+                  style={{ cursor: "text" }}
+                />
+                {note.crackCount > 0 && (
+                  <div className="crack-container">
+                    {note.crackPhase >= 1 && (
+                      <img
+                        src="/break/crack_1.png"
+                        alt="crack"
+                        className="crack-overlay"
+                      />
+                    )}
+                    {note.crackPhase >= 2 && (
+                      <img
+                        src="/break/crack_2.png"
+                        alt="crack"
+                        className="crack-overlay"
+                      />
+                    )}
+                    {note.crackPhase >= 3 && (
+                      <img
+                        src="/break/crack_3.png"
+                        alt="crack"
+                        className="crack-overlay"
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
             )}
           </div>
         ))}
