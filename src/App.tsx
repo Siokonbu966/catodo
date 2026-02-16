@@ -7,11 +7,19 @@ interface Note {
   createdAt: string;
 }
 
+interface Footprint {
+  id: string;
+  x: number;
+  y: number;
+  feet: string;
+}
+
 function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
   const [noteInput, setNoteInput] = useState("");
   const [editMode, setEditMode] = useState(true);
+  const [footprints, setFootprints] = useState<Footprint[]>([]);
   const clickCountersRef = useRef<Map<number, number>>(new Map());
   const editInputRef = useRef<HTMLInputElement>(null);
 
@@ -69,7 +77,9 @@ function App() {
     setEditingNoteId(null);
   };
 
-  const handleNoteClick = (id: number) => {
+  const handleNoteClick = (e: React.MouseEvent, id: number) => {
+    handleFootPrint(e);
+
     const counters = clickCountersRef.current;
     const count = (counters.get(id) || 0) + 1;
     counters.set(id, count);
@@ -84,9 +94,27 @@ function App() {
       }, 500);
     } else if (count === 3 && !editMode) {
       counters.delete(id);
-      if (confirm("この付箋を削除しますか？")) {
-        deleteNote(id);
-      }
+      deleteNote(id);
+    }
+  };
+
+  const handleFootPrint = (e: React.MouseEvent) => {
+    if (!editMode) {
+      const feetImages = ["feet_1.png", "feet_2.png", "feet_3.png", "feet_4.png", "feet_5.png"];
+      const randomFeet = feetImages[Math.floor(Math.random() * feetImages.length)];
+
+      const footprint: Footprint = {
+        id: `${Date.now()}-${Math.random()}`,
+        x: e.clientX,
+        y: e.clientY,
+        feet: randomFeet,
+      };
+
+      setFootprints(prev => [...prev, footprint]);
+
+      setTimeout(() => {
+        setFootprints(prev => prev.filter(f => f.id !== footprint.id));
+      }, 2000);
     }
   };
 
@@ -113,7 +141,7 @@ function App() {
   }, [editingNoteId]);
 
   return (
-    <div className="container">
+    <div className="container" onClick={handleFootPrint}>
       <h1>付箋アプリ</h1>
 
       <div className="controls">
@@ -158,12 +186,26 @@ function App() {
         </div>
       </div>
 
-      <div className="notes-board">
+      <div className="notes-board" onClick={handleFootPrint}>
+        {footprints.map((footprint) => (
+          <div
+            key={footprint.id}
+            className="footprint"
+            style={{
+              left: `${footprint.x}px`,
+              top: `${footprint.y}px`,
+              backgroundImage: `url(/cat/${footprint.feet})`,
+            }}
+          />
+        ))}
         {notes.map((note) => (
           <div
             key={note.id}
             className="note"
-            onClick={() => handleNoteClick(note.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleNoteClick(e, note.id);
+            }}
           >
             {editingNoteId === note.id ? (
               <>
