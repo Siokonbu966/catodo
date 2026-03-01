@@ -16,12 +16,20 @@ interface Footprint {
   feet: string;
 }
 
+interface PunchEffect {
+  id: string;
+  noteId: number;
+  x: number;
+  y: number;
+}
+
 function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
   const [noteInput, setNoteInput] = useState("");
   const [editMode, setEditMode] = useState(true);
   const [footprints, setFootprints] = useState<Footprint[]>([]);
+  const [punchEffects, setPunchEffects] = useState<PunchEffect[]>([]);
   const clickCountersRef = useRef<Map<number, number>>(new Map());
   const editInputRef = useRef<HTMLInputElement>(null);
   let phase = 0;
@@ -59,6 +67,7 @@ function App() {
 
   const deleteNote = (id: number) => {
     setNotes(notes.filter((note) => note.id !== id));
+    setPunchEffects((prev) => prev.filter((effect) => effect.noteId !== id));
     if (editingNoteId === id) {
       setEditingNoteId(null);
     }
@@ -100,23 +109,48 @@ function App() {
     } else if (!editMode) {
 
       if (count <= 3) {
-        setNotes(notes.map((note) =>
-          note.id === id ? { ...note, crackCount: count, crackPhase: 0 } : note
-        ));
+        const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+        const effectId = `${Date.now()}-${Math.random()}`;
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-        // アニメーション開始：3フェーズ表示
-        const animationInterval = setInterval(() => {
-          phase++;
-          if (phase <= 2) {
-            setNotes((prevNotes) =>
-              prevNotes.map((note) =>
-                note.id === id ? { ...note, crackPhase: phase } : note
-              )
-            );
-          } else {
-            clearInterval(animationInterval);
-          }
-        }, 150);
+        setPunchEffects((prev) => [
+          ...prev,
+          {
+            id: effectId,
+            noteId: id,
+            x,
+            y,
+          },
+        ]);
+
+        if (count === 1) {
+          setNotes(notes.map((note) =>
+            note.id === id ? { ...note, crackCount: count, crackPhase: 0 } : note
+          ));
+
+          // アニメーション開始：3フェーズ表示
+          const animationInterval = setInterval(() => {
+            if (counters.get(id) !== 1) {
+              clearInterval(animationInterval);
+              return;
+            }
+            phase++;
+            if (phase <= 2) {
+              setNotes((prevNotes) =>
+                prevNotes.map((note) =>
+                  note.id === id ? { ...note, crackPhase: phase } : note
+                )
+              );
+            } else {
+              clearInterval(animationInterval);
+            }
+          }, 150);
+        } else {
+          setNotes(notes.map((note) =>
+            note.id === id ? { ...note, crackCount: count, crackPhase: 3 } : note
+          ));
+        }
       }
 
       if (count === 3) {
@@ -281,6 +315,25 @@ function App() {
                   dangerouslySetInnerHTML={{ __html: escapeHtml(note.text) }}
                   style={{ cursor: "text" }}
                 />
+                {punchEffects
+                  .filter((effect) => effect.noteId === note.id)
+                  .map((effect) => (
+                    <video
+                      key={effect.id}
+                      className="punch-effect"
+                      src="/effect/パンチエフェクトグレー.mp4"
+                      autoPlay
+                      muted
+                      playsInline
+                      preload="auto"
+                      onEnded={() =>
+                        setPunchEffects((prev) =>
+                          prev.filter((item) => item.id !== effect.id)
+                        )
+                      }
+                      style={{ left: effect.x, top: effect.y }}
+                    />
+                  ))}
                 {note.crackCount > 0 && (
                   <div className="crack-container">
                     {note.crackPhase >= 1 && (
