@@ -24,6 +24,7 @@ function App() {
   const [footprints, setFootprints] = useState<Footprint[]>([]);
   const clickCountersRef = useRef<Map<number, number>>(new Map());
   const editInputRef = useRef<HTMLInputElement>(null);
+  let phase = 0;
 
   const escapeHtml = (text: string): string => {
     const map: Record<string, string> = {
@@ -97,13 +98,13 @@ function App() {
         }
       }, 500);
     } else if (!editMode) {
+
       if (count <= 3) {
         setNotes(notes.map((note) =>
           note.id === id ? { ...note, crackCount: count, crackPhase: 0 } : note
         ));
 
         // アニメーション開始：3フェーズ表示
-        let phase = 0;
         const animationInterval = setInterval(() => {
           phase++;
           if (phase <= 2) {
@@ -117,6 +118,7 @@ function App() {
           }
         }, 150);
       }
+
       if (count === 3) {
         counters.delete(id);
         setTimeout(() => {
