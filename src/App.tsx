@@ -172,7 +172,7 @@ function App() {
 
   return (
     <div className="container" onClick={handleFootPrint}>
-      <h1>付箋アプリ</h1>
+      <h1>catodo</h1>
 
       <div className="controls">
         <div className="add_field">
