@@ -206,6 +206,15 @@ function App() {
 
   return (
     <div className="container" onClick={handleFootPrint}>
+      <video
+        className="run-cat"
+        src="/run_cat/ネコ走るアニメ.mp4"
+        autoPlay
+        muted
+        playsInline
+        loop
+        preload="auto"
+      />
       <h1>catodo</h1>
 
       <div className="controls">

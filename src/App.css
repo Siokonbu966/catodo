@@ -218,6 +218,27 @@ h1 {
   object-fit: contain;
 }
 
+.run-cat {
+  position: fixed;
+  bottom: 10px;
+  left: -200px;
+  width: 200px;
+  height: auto;
+  pointer-events: none;
+  z-index: 30;
+  object-fit: contain;
+  animation: runCat 12s linear infinite;
+}
+
+@keyframes runCat {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(100vw + 200px));
+  }
+}
+
 .crack-container {
   position: absolute;
   top: -15px;
