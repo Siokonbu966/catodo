@@ -45,6 +45,22 @@ function App() {
     return text.replace(/[&<>"']/g, (m) => map[m] || m);
   };
 
+  // GIF自動削除の管理
+  useEffect(() => {
+    const timers = punchEffects.map((effect) => {
+      const timer = setTimeout(() => {
+        setPunchEffects((prev) =>
+          prev.filter((item) => item.id !== effect.id)
+        );
+      }, 135);
+      return timer;
+    });
+
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer));
+    };
+  }, [punchEffects]);
+
   const addNote = () => {
     const text = noteInput.trim();
 
@@ -206,15 +222,7 @@ function App() {
 
   return (
     <div className="container" onClick={handleFootPrint}>
-      <video
-        className="run-cat"
-        src="/run_cat/ネコ走るアニメ.mp4"
-        autoPlay
-        muted
-        playsInline
-        loop
-        preload="auto"
-      />
+      <img src="/run_cat/runcat.gif" className="run-cat"></img>
       <h1>catodo</h1>
 
       <div className="controls">
@@ -327,19 +335,10 @@ function App() {
                 {punchEffects
                   .filter((effect) => effect.noteId === note.id)
                   .map((effect) => (
-                    <video
+                    <img
                       key={effect.id}
                       className="punch-effect"
-                      src="/effect/パンチエフェクトグレー.mp4"
-                      autoPlay
-                      muted
-                      playsInline
-                      preload="auto"
-                      onEnded={() =>
-                        setPunchEffects((prev) =>
-                          prev.filter((item) => item.id !== effect.id)
-                        )
-                      }
+                      src="/effect/punch_effect.gif"
                       style={{ left: effect.x, top: effect.y }}
                     />
                   ))}

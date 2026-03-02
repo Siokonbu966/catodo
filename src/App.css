@@ -10,7 +10,7 @@ body {
   font-family: "Hachi Maru Pop", cursive;
   min-height: 100vh;
   padding: 20px;
-  background-color: #f5deb3;
+  background-color: #d2b48c;
 }
 
 .container {
@@ -185,20 +185,20 @@ h1 {
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.5);
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
 .footprint {
   position: fixed;
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   pointer-events: none;
   z-index: 9999;
-  animation: footprintAppear 2s ease-in-out forwards;
+  animation: footprintAppear 0.5s ease-in-out forwards;
 }
 
 .crack-overlay {
@@ -226,7 +226,7 @@ h1 {
   position: fixed;
   bottom: 10px;
   left: -200px;
-  width: 200px;
+  width: 300px;
   height: auto;
   pointer-events: none;
   z-index: 30;
