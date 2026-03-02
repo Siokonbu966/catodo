@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -5,9 +7,10 @@
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Hachi Maru Pop", cursive;
   min-height: 100vh;
   padding: 20px;
+  background-color: #d2b48c;
 }
 
 .container {
@@ -75,7 +78,7 @@ h1 {
 
 .stateBtn {
   padding: 12px 30px;
-  font-size: 1rem;
+  font-size: 18px;
   background-color: #9f9f9f;
   color: white;
   border: none;
@@ -95,15 +98,17 @@ h1 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
-  padding: 20px;
+  padding-left: 10rem;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
 }
 
 .note {
   background: linear-gradient(135deg, #ffc300 0%, #ffe66d 100%);
-  padding: 15px;
+  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  min-height: 150px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -113,6 +118,8 @@ h1 {
     border 0.2s ease;
   word-wrap: break-word;
   word-break: break-word;
+  position: relative;
+  overflow: hidden;
 }
 
 .note:hover {
@@ -121,7 +128,7 @@ h1 {
 }
 
 .note-content {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: #333;
   line-height: 1.4;
   flex-grow: 1;
@@ -133,7 +140,7 @@ h1 {
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ddd;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   outline: none;
   margin-bottom: 10px;
 }
@@ -160,4 +167,87 @@ h1 {
   padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
+}
+
+/** cat-feet **/
+@keyframes footprintAppear {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.footprint {
+  position: fixed;
+  width: 80px;
+  height: 80px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  z-index: 9999;
+  animation: footprintAppear 0.5s ease-in-out forwards;
+}
+
+.crack-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.punch-effect {
+  position: absolute;
+  width: 250x;
+  height: 250px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 20;
+  object-fit: contain;
+}
+
+.run-cat {
+  position: fixed;
+  bottom: 10px;
+  left: -200px;
+  width: 300px;
+  height: auto;
+  pointer-events: none;
+  z-index: 30;
+  object-fit: contain;
+  animation: runCat 12s linear infinite;
+}
+
+@keyframes runCat {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(100vw + 200px));
+  }
+}
+
+.crack-container {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  width: calc(100% + 30px);
+  height: calc(600% + 30px);
+  pointer-events: none;
 }

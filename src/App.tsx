@@ -5,6 +5,22 @@ interface Note {
   id: number;
   text: string;
   createdAt: string;
+  crackCount: number;
+  crackPhase: number;
+}
+
+interface Footprint {
+  id: string;
+  x: number;
+  y: number;
+  feet: string;
+}
+
+interface PunchEffect {
+  id: string;
+  noteId: number;
+  x: number;
+  y: number;
 }
 
 function App() {
@@ -12,8 +28,11 @@ function App() {
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
   const [noteInput, setNoteInput] = useState("");
   const [editMode, setEditMode] = useState(true);
+  const [footprints, setFootprints] = useState<Footprint[]>([]);
+  const [punchEffects, setPunchEffects] = useState<PunchEffect[]>([]);
   const clickCountersRef = useRef<Map<number, number>>(new Map());
   const editInputRef = useRef<HTMLInputElement>(null);
+  let phase = 0;
 
   const escapeHtml = (text: string): string => {
     const map: Record<string, string> = {
@@ -25,6 +44,22 @@ function App() {
     };
     return text.replace(/[&<>"']/g, (m) => map[m] || m);
   };
+
+  // GIF自動削除の管理
+  useEffect(() => {
+    const timers = punchEffects.map((effect) => {
+      const timer = setTimeout(() => {
+        setPunchEffects((prev) =>
+          prev.filter((item) => item.id !== effect.id)
+        );
+      }, 135);
+      return timer;
+    });
+
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer));
+    };
+  }, [punchEffects]);
 
   const addNote = () => {
     const text = noteInput.trim();
@@ -38,6 +73,8 @@ function App() {
       id: Date.now(),
       text: text,
       createdAt: new Date().toLocaleString("ja-JP"),
+      crackCount: 0,
+      crackPhase: 0,
     };
 
     setNotes([...notes, newNote]);
@@ -46,6 +83,7 @@ function App() {
 
   const deleteNote = (id: number) => {
     setNotes(notes.filter((note) => note.id !== id));
+    setPunchEffects((prev) => prev.filter((effect) => effect.noteId !== id));
     if (editingNoteId === id) {
       setEditingNoteId(null);
     }
@@ -69,7 +107,9 @@ function App() {
     setEditingNoteId(null);
   };
 
-  const handleNoteClick = (id: number) => {
+  const handleNoteClick = (e: React.MouseEvent, id: number) => {
+    handleFootPrint(e);
+
     const counters = clickCountersRef.current;
     const count = (counters.get(id) || 0) + 1;
     counters.set(id, count);
@@ -82,11 +122,79 @@ function App() {
           counters.delete(id);
         }
       }, 500);
-    } else if (count === 3 && !editMode) {
-      counters.delete(id);
-      if (confirm("この付箋を削除しますか？")) {
-        deleteNote(id);
+    } else if (!editMode) {
+
+      if (count <= 3) {
+        const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+        const effectId = `${Date.now()}-${Math.random()}`;
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        setPunchEffects((prev) => [
+          ...prev,
+          {
+            id: effectId,
+            noteId: id,
+            x,
+            y,
+          },
+        ]);
+
+        if (count === 1) {
+          setNotes(notes.map((note) =>
+            note.id === id ? { ...note, crackCount: count, crackPhase: 0 } : note
+          ));
+
+          // アニメーション開始：3フェーズ表示
+          const animationInterval = setInterval(() => {
+            if (counters.get(id) !== 1) {
+              clearInterval(animationInterval);
+              return;
+            }
+            phase++;
+            if (phase <= 2) {
+              setNotes((prevNotes) =>
+                prevNotes.map((note) =>
+                  note.id === id ? { ...note, crackPhase: phase } : note
+                )
+              );
+            } else {
+              clearInterval(animationInterval);
+            }
+          }, 150);
+        } else {
+          setNotes(notes.map((note) =>
+            note.id === id ? { ...note, crackCount: count, crackPhase: 3 } : note
+          ));
+        }
       }
+
+      if (count === 3) {
+        counters.delete(id);
+        setTimeout(() => {
+          deleteNote(id);
+        }, 300);
+      }
+    }
+  };
+
+  const handleFootPrint = (e: React.MouseEvent) => {
+    if (!editMode) {
+      const feetImages = ["feet_1.png", "feet_2.png", "feet_3.png", "feet_4.png", "feet_5.png"];
+      const randomFeet = feetImages[Math.floor(Math.random() * feetImages.length)];
+
+      const footprint: Footprint = {
+        id: `${Date.now()}-${Math.random()}`,
+        x: e.clientX,
+        y: e.clientY,
+        feet: randomFeet,
+      };
+
+      setFootprints(prev => [...prev, footprint]);
+
+      setTimeout(() => {
+        setFootprints(prev => prev.filter(f => f.id !== footprint.id));
+      }, 2000);
     }
   };
 
@@ -113,8 +221,9 @@ function App() {
   }, [editingNoteId]);
 
   return (
-    <div className="container">
-      <h1>付箋アプリ</h1>
+    <div className="container" onClick={handleFootPrint}>
+      <img src="/run_cat/runcat.gif" className="run-cat"></img>
+      <h1>catodo</h1>
 
       <div className="controls">
         <div className="add_field">
@@ -158,12 +267,26 @@ function App() {
         </div>
       </div>
 
-      <div className="notes-board">
+      <div className="notes-board" onClick={handleFootPrint}>
+        {footprints.map((footprint) => (
+          <div
+            key={footprint.id}
+            className="footprint"
+            style={{
+              left: `${footprint.x}px`,
+              top: `${footprint.y}px`,
+              backgroundImage: `url(/cat/${footprint.feet})`,
+            }}
+          />
+        ))}
         {notes.map((note) => (
           <div
             key={note.id}
             className="note"
-            onClick={() => handleNoteClick(note.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleNoteClick(e, note.id);
+            }}
           >
             {editingNoteId === note.id ? (
               <>
@@ -202,12 +325,49 @@ function App() {
                 </div>
               </>
             ) : (
-              <div
-                className="note-content"
-                title="クリックして編集\n3回クリックで削除"
-                dangerouslySetInnerHTML={{ __html: escapeHtml(note.text) }}
-                style={{ cursor: "text" }}
-              />
+              <div style={{ position: "relative" }}>
+                <div
+                  className="note-content"
+                  title="クリックして編集\n3回クリックで削除"
+                  dangerouslySetInnerHTML={{ __html: escapeHtml(note.text) }}
+                  style={{ cursor: "text" }}
+                />
+                {punchEffects
+                  .filter((effect) => effect.noteId === note.id)
+                  .map((effect) => (
+                    <img
+                      key={effect.id}
+                      className="punch-effect"
+                      src="/effect/punch_effect.gif"
+                      style={{ left: effect.x, top: effect.y }}
+                    />
+                  ))}
+                {note.crackCount > 0 && (
+                  <div className="crack-container">
+                    {note.crackPhase >= 1 && (
+                      <img
+                        src="/break/crack_1.png"
+                        alt="crack"
+                        className="crack-overlay"
+                      />
+                    )}
+                    {note.crackPhase >= 2 && (
+                      <img
+                        src="/break/crack_2.png"
+                        alt="crack"
+                        className="crack-overlay"
+                      />
+                    )}
+                    {note.crackPhase >= 3 && (
+                      <img
+                        src="/break/crack_3.png"
+                        alt="crack"
+                        className="crack-overlay"
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
             )}
           </div>
         ))}
