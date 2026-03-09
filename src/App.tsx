@@ -222,7 +222,7 @@ function App() {
 
   return (
     <div className="container" onClick={handleFootPrint}>
-      <img src="/run_cat/runcat.gif" className="run-cat"></img>
+      <img src={`${import.meta.env.BASE_URL}run_cat/runcat.gif`} className="run-cat"></img>
       <h1>catodo</h1>
 
       <div className="controls">
