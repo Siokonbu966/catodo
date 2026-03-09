@@ -275,7 +275,7 @@ function App() {
             style={{
               left: `${footprint.x}px`,
               top: `${footprint.y}px`,
-              backgroundImage: `url(/cat/${footprint.feet})`,
+              backgroundImage: `url(${import.meta.env.BASE_URL}cat/${footprint.feet})`,
             }}
           />
         ))}
@@ -338,7 +338,7 @@ function App() {
                     <img
                       key={effect.id}
                       className="punch-effect"
-                      src="/effect/punch_effect.gif"
+                      src={`${import.meta.env.BASE_URL}effect/punch_effect.gif`}
                       style={{ left: effect.x, top: effect.y }}
                     />
                   ))}
@@ -346,21 +346,21 @@ function App() {
                   <div className="crack-container">
                     {note.crackPhase >= 1 && (
                       <img
-                        src="/break/crack_1.png"
+                        src={`${import.meta.env.BASE_URL}break/crack_1.png`}
                         alt="crack"
                         className="crack-overlay"
                       />
                     )}
                     {note.crackPhase >= 2 && (
                       <img
-                        src="/break/crack_2.png"
+                        src={`${import.meta.env.BASE_URL}break/crack_2.png`}
                         alt="crack"
                         className="crack-overlay"
                       />
                     )}
                     {note.crackPhase >= 3 && (
                       <img
-                        src="/break/crack_3.png"
+                        src={`${import.meta.env.BASE_URL}break/crack_3.png`}
                         alt="crack"
                         className="crack-overlay"
                       />
